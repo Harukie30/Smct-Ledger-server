@@ -3,13 +3,59 @@
 namespace App\Http\Controllers\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+
+    public function login(Request $request)
+    {
+        $validate = $request->validate(
+            [
+                'email'        =>  ['required'],
+                'password'     =>  ['required']
+            ]
+        );
+
+        $user = User::whereAny(['email'], $validate['email'])->first();
+
+        if(!$user)
+        {
+            return response()->json(
+                [
+                    'message'       =>  "Email not found"
+                ]
+                ,404
+            );
+        }
+
+        $credentials = [
+            'email'     =>  filter_var($validate['email'], FILTER_VALIDATE_EMAIL) ? $validate['email'] : $user->name,
+            'password'  =>  $validate['password']
+        ];
+
+        if(!Auth::attempt($credentials))
+        {
+            return response()->json(
+                [
+                    'message'     => 'Invalidate Credentials'
+                ]
+                ,400
+            );
+        }
+
+        return response()->json(
+            [
+                'message'       =>  'User Login Successful'
+            ]
+        );
+    }
+
     public function index()
     {
         return response()->json(
