@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Enums\Roles;
+use App\Enums\RoleNames;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
@@ -14,6 +14,6 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->count(5)->create()->each(fn($q) => $q->assignRole(Roles::EMPLOYEE));
+        User::factory()->count(5)->create()->each(fn($q) => $q->assignRole(RoleNames::EMPLOYEE));
     }
 }

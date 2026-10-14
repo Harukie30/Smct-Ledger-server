@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Enums\Roles;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Enums\RoleNames;
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
@@ -17,27 +17,27 @@ class RolesAndPermissionSeeder extends Seeder
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $role_admin = Role::create(['name' => Roles::ADMIN]);
-        $role_uploader = Role::create(['name' => Roles::UPLOADER]);
-        $role_employee = Role::create(['name' => Roles::EMPLOYEE]);
+        $role_admin = Role::create(['name' => RoleNames::ADMIN]);
+        $role_uploader = Role::create(['name' => RoleNames::UPLOADER]);
+        $role_employee = Role::create(['name' => RoleNames::EMPLOYEE]);
 
         $sampleAdmin = [
             'name'          => 'Admin Test User',
-            'branch_code'   =>  'admin',
+            'branch_code'   => 'admin',
             'email'         => 'admin@example.com',
             'password'      => 'password'
         ];
 
         $sampleUploader = [
             'name'          => 'Uploader Test User',
-            'branch_code'   =>  'uploader',
+            'branch_code'   => 'uploader',
             'email'         => 'uploader@example.com',
             'password'      => 'password'
         ];
 
         $sampleEmployee = [
             'name'          => 'Employee Test User',
-            'branch_code'   =>  'employee',
+            'branch_code'   => 'employee',
             'email'         => 'employee@example.com',
             'password'      => 'password'
         ];
