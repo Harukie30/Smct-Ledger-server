@@ -22,22 +22,31 @@ class UserController extends Controller
             ]
         );
 
-        $user = User::whereAny(['email'], $validate['email'])->first();
+        $user = User::whereAny(['email','branch_code'], $validate['email'])->first();
 
         if(!$user)
         {
             return response()->json(
                 [
-                    'message'       =>  "Email not found"
+                    'message'       =>  "Email/Branch-code not found"
                 ]
                 ,404
             );
         }
 
-        $credentials = [
-            'email'     =>  filter_var($validate['email'], FILTER_VALIDATE_EMAIL) ? $validate['email'] : $user->name,
-            'password'  =>  $validate['password']
-        ];
+        $credentials = [];
+        if(filter_var($validate['email'], FILTER_VALIDATE_EMAIL))
+        {
+            $credentials = [
+                'email'     =>  $user->email,
+                'password'  =>  $validate['password']
+            ];
+        }else{
+            $credentials = [
+                'branch_code'   =>  $user->branch_code,
+                'password'      =>  $validate['password']
+            ];
+        }
 
         if(!Auth::attempt($credentials))
         {
