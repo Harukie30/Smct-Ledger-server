@@ -22,7 +22,7 @@ class UserController extends Controller
             ]
         );
 
-        $user = User::whereAny(['email','branch_code'], $validate['email'])->first();
+        $user = User::whereAny(['email','code'], $validate['email'])->first();
 
         if(!$user)
         {
@@ -43,7 +43,7 @@ class UserController extends Controller
             ];
         }else{
             $credentials = [
-                'branch_code'   =>  $user->branch_code,
+                'code'          =>  $user->code,
                 'password'      =>  $validate['password']
             ];
         }

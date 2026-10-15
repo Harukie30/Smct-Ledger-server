@@ -17,28 +17,31 @@ class RolesAndPermissionSeeder extends Seeder
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $role_admin = Role::create(['name' => RoleNames::ADMIN]);
-        $role_uploader = Role::create(['name' => RoleNames::UPLOADER]);
-        $role_employee = Role::create(['name' => RoleNames::EMPLOYEE]);
+        $role_admin = Role::create(['name' => RoleNames::ADMIN->value]);
+        $role_uploader = Role::create(['name' => RoleNames::UPLOADER->value]);
+        $role_employee = Role::create(['name' => RoleNames::EMPLOYEE->value]);
 
         $sampleAdmin = [
-            'name'          => 'Admin Test User',
-            'branch_code'   => 'admin',
-            'email'         => 'admin@example.com',
+            "name"          => "Administrator",
+            "code"          => "admin",
+            "email"         => "admin@gmail.com",
+            "branch_code"   => "HO",
             'password'      => 'password'
         ];
 
         $sampleUploader = [
             'name'          => 'Uploader Test User',
-            'branch_code'   => 'uploader',
+            'code'          => 'uploader',
             'email'         => 'uploader@example.com',
+            'branch_code'   => 'HO',
             'password'      => 'password'
         ];
 
         $sampleEmployee = [
             'name'          => 'Employee Test User',
-            'branch_code'   => 'employee',
+            'code'          => 'employee',
             'email'         => 'employee@example.com',
+            'branch_code'   => 'HO',
             'password'      => 'password'
         ];
 
