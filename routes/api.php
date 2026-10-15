@@ -9,23 +9,24 @@ use Illuminate\Support\Facades\Route;
 Route::post('login', [UserController::class, 'login']);
 
 Route::get('/profile', function (Request $request) {
-    return $request->user()->load(
-        [
-            'roles'
-        ]
-    );
-
+        return $request->user()->load(
+            [
+                'roles' => fn($q) => $q->select(['name'])
+            ]
+        );
 })->middleware('auth:sanctum');
 
 
 Route::middleware('auth:sanctum')->group(
     function () {
 
-        Route::controller(UserController::class)->group(
-            function () {
-                // Route::get('getAllUsers','index');
-            }
-        );
+        // Route::controller(UserController::class)->group(
+        //     function () {
+
+        //     }
+        // );
+
+        Route::apiResource('users', UserController::class);
 
          Route::post('logout', function (Request $request)
         {
@@ -42,3 +43,4 @@ Route::middleware('auth:sanctum')->group(
         });
     }
 );
+

@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers\Controllers;
 
+use App\Enums\RoleNames;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -65,11 +69,17 @@ class UserController extends Controller
         );
     }
 
-    public function index()
+    public function index(Request $request)
     {
+        $perPage = $request->input('per_page',10);
+        $search = $request->input('search');
+
+        $users = User::with(['roles'])->search($search)->paginate($perPage);
+
         return response()->json(
             [
-                'message'  =>  'test'
+                'message'   =>  'List of Users',
+                'users'     =>  $users
             ]
         );
     }
@@ -87,15 +97,53 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate(
+            [
+                'name'          =>  ['required','string'],
+                'code'          =>  ['required', Rule::unique('users', 'code')],
+                'email'         =>  ['nullable', 'email'],
+                'branch_code'   =>  ['required'],
+                'password'      =>  ['required', 'string', 'min:8', 'max:20']
+            ]
+        );
+
+        $user = User::create(
+            [
+                'name'          =>  $validated['name'],
+                'code'          =>  $validated['code'],
+                'email'         =>  $validated['email'] ?: null,
+                'branch_code'   =>  $validated['branch_code'],
+                'password'      =>  $validated['password']
+            ]
+        );
+
+        $user->assignRole(RoleNames::EMPLOYEE->value);
+
+        return response()->json(
+            [
+                'message'       =>  'User successfully added'
+            ]
+            ,200
+        );
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(User $user)
     {
-        //
+        $user = $user->load(
+            [
+                'role'  => fn($q) => $q->select(['id', 'name'])
+            ]
+        );
+
+        return response()->json(
+            [
+                'message'       =>  'User info',
+                'user'          =>  $user
+            ]
+        );
     }
 
     /**
@@ -109,16 +157,56 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, User $user)
     {
-        //
+        $validated = $request->validate(
+            [
+                'name'          =>  ['sometimes','string'],
+                'code'          =>  ['sometimes', Rule::unique('users', 'code')->ignore($user->id)],
+                'email'         =>  ['sometimes|nullable', 'email'],
+                'branch_code'   =>  ['sometimes'],
+                'password'      =>  ['sometimes', 'string', 'min:8', 'max:20'],
+                'roles'         =>  ['required','array|numeric']
+            ]
+        );
+
+        DB::transaction(function () use ($user, $validated) {
+
+            $user->update(
+                [
+                    'name'          =>  $validated['name'] ?: $user->name,
+                    'code'          =>  $validated['code'] ?: $user->code,
+                    'email'         =>  $validated['email'] ?: $user->email,
+                    'branch_code'   =>  $validated['branch_code'] ?: $user->branch_code,
+                    'password'      =>  $validated['password'] ?: $user->password
+                ]
+            );
+
+            $role_id = Role::findOrFail($validated['roles']);
+
+            $user->syncRoles($role_id);
+
+            return response()->json(
+                [
+                    'message'       =>  'User updated successfully'
+                ]
+            );
+
+        });
+
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(User $user)
     {
-        //
+        $user->delete();
+
+        return response()->json(
+            [
+                'message'   =>  'User Deleted'
+            ]
+        );
     }
 }
