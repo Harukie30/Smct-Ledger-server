@@ -73,13 +73,25 @@ class UserController extends Controller
     {
         $perPage = $request->input('per_page',10);
         $search = $request->input('search');
+        $role = $request->input('role');
+        $branch_code = $request->input('branch_code');
 
-        $users = User::with(['roles'])->search($search)->paginate($perPage);
+        $branchCode = User::groupBy('branch_code')->get(['branch_code']);
+        $users = User::with(
+                        [
+                            'roles' => fn($q) => $q->select(['name'])
+                            ]
+                        )
+                    ->search($search)
+                    ->when($role, fn($q) => $q->whereRelation('name', $role))
+                    ->when($branch_code, fn($q) => $q->where('branch_code', $branch_code))
+                    ->paginate($perPage);
 
         return response()->json(
             [
-                'message'   =>  'List of Users',
-                'users'     =>  $users
+                'message'       =>  'List of Users',
+                'users'         =>  $users,
+                'branch_code'   =>  $branchCode
             ]
         );
     }
