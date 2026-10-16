@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Controllers;
+namespace App\Http\Controllers;
 
 use App\Enums\RoleNames;
-use App\Http\Controllers\Controller;
+use App\Http\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -67,7 +67,7 @@ class UserController extends Controller
                 'message'       =>  'User Login Successful'
             ]
         );
-    }
+            }
 
     public function index(Request $request)
     {
@@ -76,10 +76,10 @@ class UserController extends Controller
         $role = $request->input('role');
         $branch_code = $request->input('branch_code');
 
-        $branchCode = User::groupBy('branch_code')->get(['branch_code']);
+        $branchCodes = User::groupBy('branch_code')->get(['branch_code']);
         $users = User::with(
-                        [
-                            'roles' => fn($q) => $q->select(['name'])
+                            [
+                                'roles' => fn($q) => $q->select(['name'])
                             ]
                         )
                     ->search($search)
@@ -91,7 +91,7 @@ class UserController extends Controller
             [
                 'message'       =>  'List of Users',
                 'users'         =>  $users,
-                'branch_code'   =>  $branchCode
+                'branch_code'   =>  $branchCodes
             ]
         );
     }
@@ -146,7 +146,7 @@ class UserController extends Controller
     {
         $user = $user->load(
             [
-                'role'  => fn($q) => $q->select(['id', 'name'])
+                'roles'  => fn($q) => $q->select(['id', 'name'])
             ]
         );
 
