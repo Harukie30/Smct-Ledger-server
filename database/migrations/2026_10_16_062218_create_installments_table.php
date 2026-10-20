@@ -24,8 +24,9 @@ return new class extends Migration
             $table->integer('monthly_installment');
             $table->integer('monthly_principal');
             $table->integer('monthly_interest');
-            $table->boolean('is_rebated');
+            $table->integer('rebate_amount');
             $table->string('item');
+            $table->string('item_class');
             $table->string('total_accounts_receivable');
             $table->integer('downpayment');
             $table->integer('financed_amount');
