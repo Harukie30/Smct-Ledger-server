@@ -50,9 +50,9 @@ class LogEvent implements ShouldBroadcast
     public function broadcastWith(): array
     {
         return [
-            'file_id' => $this->logFileId,
-            'info' => $this->info,
-            'created_at' => $this->created_at,
+            'file_id'       => $this->logFileId,
+            'info'          => $this->info,
+            'created_at'    => $this->created_at,
         ];
     }
 }

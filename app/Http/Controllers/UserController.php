@@ -175,28 +175,31 @@ class UserController extends Controller
             [
                 'name'          =>  ['sometimes','string'],
                 'code'          =>  ['sometimes', Rule::unique('users', 'code')->ignore($user->id)],
-                'email'         =>  ['sometimes|nullable', 'email'],
+                'email'         =>  ['sometimes', 'email'],
                 'branch_code'   =>  ['sometimes'],
-                'password'      =>  ['sometimes', 'string', 'min:8', 'max:20'],
-                'roles'         =>  ['required','array|numeric']
+                'password'      =>  ['nullable', 'string', 'min:8', 'max:20'],
+                'roles'         =>  ['required']
             ]
         );
 
-        DB::transaction(function () use ($user, $validated) {
-
-            $user->update(
+        DB::transaction(function () use ($request, $user, $validated) {
+            $userData =
                 [
                     'name'          =>  $validated['name'] ?: $user->name,
                     'code'          =>  $validated['code'] ?: $user->code,
                     'email'         =>  $validated['email'] ?: $user->email,
                     'branch_code'   =>  $validated['branch_code'] ?: $user->branch_code,
-                    'password'      =>  $validated['password'] ?: $user->password
-                ]
-            );
+                ];
 
-            $role_id = Role::findOrFail($validated['roles']);
+            if($request->filled('password'))
+            {
+                $userData['password'] =   $validated['password'] ?: $user->password ;
+            }
+            $user->update($userData);
 
-            $user->syncRoles($role_id);
+            $role_id = Role::whereIn("name",$validated['roles'])->first();
+
+            $user->syncRoles($role_id->id);
 
             return response()->json(
                 [

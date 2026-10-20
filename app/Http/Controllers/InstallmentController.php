@@ -15,9 +15,30 @@ class InstallmentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+        $page = $request->input("per_page",10);
 
+        $installments = Installment::select(
+                                            [
+                                                'id',
+                                                'location_id',
+                                                'internal_id',
+                                                'customer_name',
+                                                'so_number',
+                                                'purchase_date',
+                                            ]
+                                        )
+                                        ->with(['location' => fn($q) => $q->select(['id','location_name'])])
+                                        ->search($search)
+                                        ->paginate($page);
+        return response()->json(
+            [
+                'accounts'      =>  $installments
+            ]
+            ,200
+        );
     }
 
     /**

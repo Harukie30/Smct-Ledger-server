@@ -27,13 +27,8 @@ Route::middleware('auth:sanctum')->group(
         //     }
         // );
 
-        Route::controller(InstallmentController::class)->group(
-            function () {
-                Route::post('/installments','store');
-            }
-        );
-
         Route::apiResource('users', UserController::class);
+        Route::apiResource('installments', InstallmentController::class);
 
          Route::post('logout', function (Request $request)
         {
