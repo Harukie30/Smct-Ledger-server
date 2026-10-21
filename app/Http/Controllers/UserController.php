@@ -85,6 +85,7 @@ class UserController extends Controller
                     ->search($search)
                     ->when($role, fn($q) => $q->whereRelation('name', $role))
                     ->when($branch_code, fn($q) => $q->where('branch_code', $branch_code))
+                    ->latest()
                     ->paginate($perPage);
 
         return response()->json(

@@ -11,8 +11,8 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log as FacadesLog;
 use Throwable;
 
 class ImportInstallments implements ShouldQueue
@@ -27,7 +27,7 @@ class ImportInstallments implements ShouldQueue
         public string $batch,
         public array $data,
         public User $user,
-        public string $importId
+        public string $file_name
     )
     {
         //
@@ -157,6 +157,7 @@ class ImportInstallments implements ShouldQueue
         $logInfo = [];
         if(!empty($missingRows))
         {
+            FacadesLog::info($missingRows);
             foreach($missingRows as $rowsItem)
             {
                 $logInfo[] = [
@@ -169,7 +170,7 @@ class ImportInstallments implements ShouldQueue
                     new LogEvent
                     (
                         $this->user->id,
-                        $this->importId,
+                        $this->file_name,
                         $rowsItem,
                         now()->toISOString()
                     )
@@ -184,15 +185,15 @@ class ImportInstallments implements ShouldQueue
 
         $info = sprintf(
                     "File uploaded: %s \nBatch: %s successfully \nUploader: %s",
-                    $this->importId,
+                    $this->file_name,
                     $this->batch,
                     $this->user->name
                 );
 
         Log::create(
             [
-                'unique_id' =>  $this->importId,
-                'info' => $info,
+                'file_name' =>  $this->file_name,
+                'info'      => $info,
             ]
         );
 
@@ -200,7 +201,7 @@ class ImportInstallments implements ShouldQueue
             new LogEvent
             (
                 $this->user->id,
-                $this->importId,
+                $this->file_name,
                 $info,
                 now()->toISOString()
             )
@@ -211,7 +212,7 @@ class ImportInstallments implements ShouldQueue
     {
         $info = sprintf(
                         "File upload failed: %s\nBatch: %s failed\nUploader: %s\nError: %s",
-                        $this->importId,
+                        $this->file_name,
                         $this->batch,
                         $this->user->name,
                         $exception?->getMessage() ?? 'Unknown error'
@@ -219,8 +220,8 @@ class ImportInstallments implements ShouldQueue
 
         Log::create(
             [
-                'unique_id' => $this->importId,
-                'info' =>  $info
+                'file_name' => $this->file_name,
+                'info'      =>  $info
             ]
         );
 
@@ -228,7 +229,7 @@ class ImportInstallments implements ShouldQueue
             new LogEvent
             (
                 $this->user->id,
-                $this->importId,
+                $this->file_name,
                 $info,
                 now()->toISOString()
             )

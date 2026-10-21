@@ -7,6 +7,7 @@ use App\Jobs\ImportInstallments;
 use App\Models\Installment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 
@@ -64,7 +65,7 @@ class InstallmentController extends Controller
             ]
         );
 
-        $importId = (string) Str::random(5);
+        $file_name = $request->file_name;
 
         $chunks = array_chunk($request->rows, 500);
 
@@ -80,7 +81,7 @@ class InstallmentController extends Controller
                 $batch,
                 $chunk,
                 Auth::user(),
-                $importId
+                $file_name
             );
         }
 
@@ -97,7 +98,11 @@ class InstallmentController extends Controller
      */
     public function show(Installment $installment)
     {
-        //
+        return response()->json(
+            [
+                'installment'  => $installment->load(['location','installmentLedgers'])
+            ]
+        );
     }
 
     /**
