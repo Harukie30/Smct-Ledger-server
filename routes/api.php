@@ -6,6 +6,7 @@ use App\Http\Controllers\LogController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LocationController;
 
 
 Route::post('login', [UserController::class, 'login']);
@@ -31,6 +32,7 @@ Route::middleware('auth:sanctum')->group(
         Route::apiResource('users', UserController::class);
         Route::apiResource('installments', InstallmentController::class);
         Route::apiResource('logs', LogController::class);
+        Route::apiResource('locations', LocationController::class);
 
          Route::post('logout', function (Request $request)
         {

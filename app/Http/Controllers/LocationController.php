@@ -11,9 +11,18 @@ class LocationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $search = $request->input("search");
+        $page = $request->input("per_page");
+        $location = Location::select(['id', 'location_name'])->when($search, fn($q) => $q->whereLike('location_name', "%{$search}%"))->paginate($page);
+
+        return response()->json(
+            [
+                'locations'     =>  $location
+            ]
+            ,200
+        );
     }
 
     /**
@@ -29,7 +38,23 @@ class LocationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validate = $request->validate(
+            [
+                'location_name'     =>  ['required', 'string']
+            ]
+        );
+
+        Location::create(
+            [
+                'location_name'     =>  $validate['location_name']
+            ]
+        );
+
+        return response()->json(
+            [
+                'message'   =>  "Location Successfully Added"
+            ]
+        );
     }
 
     /**
@@ -37,7 +62,17 @@ class LocationController extends Controller
      */
     public function show(Location $location)
     {
-        //
+        return response()->json(
+            [
+                'message'   =>   $location
+                                        ->load(
+                                            [
+                                                'installments'  =>  fn($q)  =>  $q->select(['id','location_id','internal_id', 'customer_name', 'so_number', 'purchase_date'])
+                                            ]
+                                        )
+            ]
+        );
+
     }
 
     /**
@@ -53,7 +88,23 @@ class LocationController extends Controller
      */
     public function update(Request $request, Location $location)
     {
-        //
+        $validate = $request->validate(
+            [
+                'location_name'     =>  ['required', 'string']
+            ]
+        );
+
+        $location->update(
+            [
+                'location_name'     =>  $validate['location_name']
+            ]
+        );
+
+        return response()->json(
+            [
+                'message'   =>  "Location Successfully Updated"
+            ]
+        );
     }
 
     /**

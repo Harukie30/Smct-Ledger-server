@@ -12,7 +12,6 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log as FacadesLog;
 use Throwable;
 
 class ImportInstallments implements ShouldQueue
@@ -157,7 +156,6 @@ class ImportInstallments implements ShouldQueue
         $logInfo = [];
         if(!empty($missingRows))
         {
-            FacadesLog::info($missingRows);
             foreach($missingRows as $rowsItem)
             {
                 $logInfo[] = [
