@@ -220,7 +220,7 @@ class ImportInstallments implements ShouldQueue
         Log::create(
             [
                 'unique_id' => $this->importId,
-                 'info' =>  $info
+                'info' =>  $info
             ]
         );
 

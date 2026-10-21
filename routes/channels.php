@@ -8,5 +8,5 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 });
 
 Broadcast::channel('logs.{authID}', function (User $user, int $authID) {
-    return $user->id === $authID;
+    return (int) $user->id === (int) $authID;
 });
