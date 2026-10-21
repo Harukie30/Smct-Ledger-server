@@ -79,7 +79,7 @@ class InstallmentController extends Controller
             ImportInstallments::dispatch(
                 $batch,
                 $chunk,
-                Auth::user()->name,
+                Auth::user(),
                 $importId
             );
         }
@@ -88,7 +88,7 @@ class InstallmentController extends Controller
             [
                 'message' => 'Installment generation completed successfully.'
             ]
-            , 200
+            ,200
         );
     }
 

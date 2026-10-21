@@ -7,6 +7,7 @@ use App\Models\Installment;
 use App\Models\InstallmentLedger;
 use App\Models\Location;
 use App\Models\Log;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -25,7 +26,7 @@ class ImportInstallments implements ShouldQueue
     (
         public string $batch,
         public array $data,
-        public string $username,
+        public User $user,
         public string $importId
     )
     {
@@ -167,7 +168,7 @@ class ImportInstallments implements ShouldQueue
                 event(
                     new LogEvent
                     (
-                        Auth::id(),
+                        $this->user->id,
                         $this->importId,
                         $rowsItem,
                         now()->toISOString()
@@ -185,8 +186,9 @@ class ImportInstallments implements ShouldQueue
                     "File uploaded: %s \nBatch: %s successfully \nUploader: %s",
                     $this->importId,
                     $this->batch,
-                    $this->username
+                    $this->user->name
                 );
+
         Log::create(
             [
                 'unique_id' =>  $this->importId,
@@ -197,7 +199,7 @@ class ImportInstallments implements ShouldQueue
         event(
             new LogEvent
             (
-                Auth::id(),
+                $this->user->id,
                 $this->importId,
                 $info,
                 now()->toISOString()
@@ -207,17 +209,29 @@ class ImportInstallments implements ShouldQueue
 
     public function failed(?Throwable $exception): void
     {
-        Log::create(
-            [
-                'unique_id' => $this->importId,
-                 'info' => sprintf(
+        $info = sprintf(
                         "File upload failed: %s\nBatch: %s failed\nUploader: %s\nError: %s",
                         $this->importId,
                         $this->batch,
-                        $this->username,
+                        $this->user->name,
                         $exception?->getMessage() ?? 'Unknown error'
-                    )
+                    );
+
+        Log::create(
+            [
+                'unique_id' => $this->importId,
+                 'info' =>  $info
             ]
+        );
+
+        event(
+            new LogEvent
+            (
+                $this->user->id,
+                $this->importId,
+                $info,
+                now()->toISOString()
+            )
         );
     }
 }

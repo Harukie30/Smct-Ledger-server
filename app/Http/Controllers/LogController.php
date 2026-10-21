@@ -10,9 +10,19 @@ class LogController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $search = $request->input("search");
+        $page = $request->input("per_page", 10);
+
+        $logs = Log::when($search, fn($q) => $q->whereAny(['unique_id', 'info'], 'LIKE', "{$search}"))->paginate($page);
+
+        return response()->json(
+            [
+                'logs'  =>  $logs
+            ]
+            ,200
+        );
     }
 
     /**
