@@ -64,15 +64,13 @@ class LocationController extends Controller
     {
         return response()->json(
             [
-                'message'   =>   $location
-                                        ->load(
+                'message'   =>   $location->load(
                                             [
                                                 'installments'  =>  fn($q)  =>  $q->select(['id','location_id','internal_id', 'customer_name', 'so_number', 'purchase_date'])
                                             ]
                                         )
             ]
         );
-
     }
 
     /**
@@ -112,6 +110,12 @@ class LocationController extends Controller
      */
     public function destroy(Location $location)
     {
-        //
+        $location->delete();
+
+        return response()->json(
+            [
+                'message'   =>  "Location Successfully Deleted"
+            ]
+        );
     }
 }
