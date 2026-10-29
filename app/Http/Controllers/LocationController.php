@@ -15,7 +15,9 @@ class LocationController extends Controller
     {
         $search = $request->input("search");
         $page = $request->input("per_page");
-        $location = Location::select(['id', 'location_name'])->when($search, fn($q) => $q->whereLike('location_name', "%{$search}%"))->paginate($page);
+        $location = Location::select(['id', 'location_name'])
+                        ->when($search, fn($q) => $q->whereLike('location_name', "%{$search}%"))
+                        ->paginate($page);
 
         return response()->json(
             [
@@ -116,6 +118,7 @@ class LocationController extends Controller
             [
                 'message'   =>  "Location Successfully Deleted"
             ]
+            ,200
         );
     }
 }

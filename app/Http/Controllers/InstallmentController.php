@@ -7,8 +7,6 @@ use App\Jobs\ImportInstallments;
 use App\Models\Installment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 
 class InstallmentController extends Controller
@@ -21,19 +19,19 @@ class InstallmentController extends Controller
         $search = $request->input('search');
         $page = $request->input("per_page",10);
 
-        $installments = Installment::select(
+        $installments = Installment::with(['location' => fn($q) => $q->select(['id','location_name'])])
+                                        ->search($search)
+                                        ->paginate(
+                                            $page,
                                             [
                                                 'id',
                                                 'location_id',
                                                 'internal_id',
                                                 'customer_name',
-                                                'so_number',
                                                 'purchase_date',
+                                                'so_number',
                                             ]
-                                        )
-                                        ->with(['location' => fn($q) => $q->select(['id','location_name'])])
-                                        ->search($search)
-                                        ->paginate($page);
+                                        );
         return response()->json(
             [
                 'accounts'      =>  $installments
@@ -58,7 +56,7 @@ class InstallmentController extends Controller
         $request->validate(
             [
                 'rows'                      => ['required', 'array'],
-                'rows.*.sales_order_no'     =>  ['required']
+                'rows.*.sales_order_no'     => ['required']
             ],
             [
                 'rows.*.sales_order_no.required'    =>  'SO number is required for each accounts.PLease check the uploaded file'
@@ -87,7 +85,7 @@ class InstallmentController extends Controller
 
         return response()->json(
             [
-                'message' => 'Installment generation completed successfully.'
+                'message' => 'Installment import is in progress. Please check the logs to monitor the upload status.'
             ]
             ,200
         );

@@ -40,8 +40,6 @@ class ImportInstallments implements ShouldQueue
         $missingRows = [];
         $installments = [];
 
-            // 'is_rebated',
-
         $requiredFields = [
             'internal_id',
             'customer_name',
@@ -51,11 +49,13 @@ class ImportInstallments implements ShouldQueue
             'monthly_installment',
             'monthly_principal',
             'monthly_interest',
+            'rebate_amount',
             'item',
             'total_accounts_receivable',
             'down_payment',
             'financed_amount',
-            'location'
+            'location',
+            'item_class'
         ];
 
         foreach ($this->data as $item) {
@@ -90,9 +90,6 @@ class ImportInstallments implements ShouldQueue
                                     ->where('customer_name', $item['customer_name'])
                                 )->exists();
 
-                $temp_rebate_amount = 300;
-                $temp_item_class =  'test_item_class';
-
                 if(!$isLedgerExist){
                     $installments[] = [
                         'location_id'                   =>  $location->id,
@@ -105,9 +102,9 @@ class ImportInstallments implements ShouldQueue
                         'monthly_installment'           =>  $item['monthly_installment'],
                         'monthly_principal'             =>  $item['monthly_principal'],
                         'monthly_interest'              =>  $item['monthly_interest'],
-                        'rebate_amount'                 =>  $temp_rebate_amount,
                         'item'                          =>  $item['item'],
-                        'item_class'                    =>  $temp_item_class,
+                        'rebate_amount'                 =>  $item["rebate_amount"],
+                        'item_class'                    =>  $item["item_class"],
                         'total_accounts_receivable'     =>  $item['total_accounts_receivable'],
                         'downpayment'                   =>  $item['down_payment'],
                         'financed_amount'               =>  $item['financed_amount'],
@@ -159,7 +156,7 @@ class ImportInstallments implements ShouldQueue
             foreach($missingRows as $rowsItem)
             {
                 $logInfo[] = [
-                    'info'          =>  $rowsItem,
+                    'info'          => $rowsItem,
                     'created_at'    => now(),
                     'updated_at'    => now(),
                 ];

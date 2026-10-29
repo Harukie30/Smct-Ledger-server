@@ -13,4 +13,9 @@ class Location extends Model
     {
         return $this->hasMany(Installment::class, 'location_id');
     }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Installment::class, 'location_id');
+    }
 }

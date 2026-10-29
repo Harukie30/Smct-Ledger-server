@@ -21,7 +21,7 @@ class LogEvent implements ShouldBroadcastNow
     public function __construct
     (
         public int $authID,
-        public string $logFileId,
+        public string $fileName,
         public string $info,
         public string $created_at,
     )
@@ -51,7 +51,7 @@ class LogEvent implements ShouldBroadcastNow
     public function broadcastWith(): array
     {
         return [
-            'file_id'       => $this->logFileId,
+            'file_name'     => $this->fileName,
             'info'          => $this->info,
             'created_at'    => $this->created_at,
         ];

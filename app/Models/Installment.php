@@ -22,6 +22,11 @@ class Installment extends Model
         return $this->hasMany(InstallmentLedger::class, 'installment_id');
     }
 
+    public function installmentPayments(): HasMany
+    {
+        return $this->hasMany(Payment::class, 'installment_id');
+    }
+
     #[Scope]
     public function search(Builder $builder , ?string $term)
     {

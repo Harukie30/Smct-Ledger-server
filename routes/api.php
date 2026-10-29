@@ -7,11 +7,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LocationController;
-
+use App\Http\Controllers\PaymentController;
 
 Route::post('login', [UserController::class, 'login']);
 
-Route::get('/profile', function (Request $request) {
+Route::get('profile', function (Request $request) {
         return $request->user()->load(
             [
                 'roles' => fn($q) => $q->select(['name'])
@@ -33,6 +33,7 @@ Route::middleware('auth:sanctum')->group(
         Route::apiResource('installments', InstallmentController::class);
         Route::apiResource('logs', LogController::class);
         Route::apiResource('locations', LocationController::class);
+        Route::apiResource('payments', PaymentController::class);
 
          Route::post('logout', function (Request $request)
         {
