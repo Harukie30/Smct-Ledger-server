@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignIdFor(Location::class,   'location_id')->constrained()->cascadeOnDelete() ;
             $table->string('internal_id');
             $table->string('customer_name');
-            $table->string('so_number');
+            $table->string('so_number')->unique();
             $table->date('purchase_date');
             $table->date('first_due_date');
             $table->integer('term');

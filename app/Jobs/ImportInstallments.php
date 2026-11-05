@@ -117,6 +117,11 @@ class ImportInstallments implements ShouldQueue
 
         if(!empty($installments)){
 
+            $installments = collect($installments)
+                            ->unique('so_number')
+                            ->values()
+                            ->all();
+
             DB::transaction(
                 function () use ($installments)
                 {
@@ -153,6 +158,11 @@ class ImportInstallments implements ShouldQueue
         $logInfo = [];
         if(!empty($missingRows))
         {
+            $missingRows = collect($missingRows)
+                            ->unique()
+                            ->values()
+                            ->all();
+
             foreach($missingRows as $rowsItem)
             {
                 $logInfo[] = [

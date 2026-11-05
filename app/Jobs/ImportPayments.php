@@ -150,6 +150,12 @@ class ImportPayments implements ShouldQueue
 
         if(!empty($payments))
         {
+
+            $payments = collect($payments)
+                        ->unique('document_number')
+                        ->values()
+                        ->all();
+
             DB::transaction(
                 function () use ($payments)
                 {
@@ -161,6 +167,11 @@ class ImportPayments implements ShouldQueue
         $logInfo = [];
         if(!empty($missingRows))
         {
+            $missingRows = collect($missingRows)
+                            ->unique()
+                            ->values()
+                            ->all();
+
             foreach($missingRows as $rowsItem)
             {
                 $logInfo[] = [
