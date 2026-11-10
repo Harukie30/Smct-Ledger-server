@@ -26,7 +26,7 @@ class RolesAndPermissionSeeder extends Seeder
             "code"          => "admin",
             "email"         => "admin@gmail.com",
             "branch_code"   => "HO",
-            'password'      => 'password'
+            'password'      => 'dapho04051983'
         ];
 
         $sampleUploader = [

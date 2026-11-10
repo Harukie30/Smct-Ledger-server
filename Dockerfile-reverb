@@ -1,0 +1,14 @@
+FROM php:8.3.36-cli
+
+WORKDIR /var/www/html
+
+COPY . .
+
+RUN apt-get update && apt-get install -y libzip-dev unzip \
+    && docker-php-ext-install zip pcntl sockets \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
+    && composer install --no-dev --optimize-autoloader
+
+CMD ["php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=8086"]
