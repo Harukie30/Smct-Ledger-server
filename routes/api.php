@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\LedgerController;
 
 Route::post('login', [UserController::class, 'login']);
 
@@ -34,6 +35,7 @@ Route::middleware('auth:sanctum')->group(
         Route::apiResource('logs', LogController::class);
         Route::apiResource('locations', LocationController::class);
         Route::apiResource('payments', PaymentController::class);
+        Route::get('ledger/{installment}', [LedgerController::class, 'show']);
 
          Route::post('logout', function (Request $request)
         {
