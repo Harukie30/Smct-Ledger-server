@@ -35,7 +35,7 @@ Route::middleware('auth:sanctum')->group(
         Route::apiResource('logs', LogController::class);
         Route::apiResource('locations', LocationController::class);
         Route::apiResource('payments', PaymentController::class);
-        Route::get('ledger/{installment_id}', [LedgerController::class, 'show']);
+        Route::get('ledger/{installment}', [LedgerController::class, 'show']);
 
          Route::post('logout', function (Request $request)
         {
