@@ -32,6 +32,7 @@ class LedgerController extends Controller
         //    (importante ang order kay ang calculator mo-apply sumala sa order).
         //    Kung naay void feature, i-filter diri ang voided payments (wala pa sa payments migration).
         $payments = Payment::where('installment_id', $installment->id)
+            ->where('is_void', false)
             ->orderBy('payment_date')
             ->orderBy('id')
             ->get();

@@ -11,6 +11,17 @@ class LocationController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+    public function index2()
+    {
+        return response()->json(
+            [
+                'locations' =>  Location::get(['id','location_name'])
+            ]
+            ,200
+        );
+    }
+
     public function index(Request $request)
     {
         $search = $request->input("search");

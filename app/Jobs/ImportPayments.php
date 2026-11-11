@@ -131,7 +131,6 @@ class ImportPayments implements ShouldQueue
                             'document_number'               =>  $item["document_number"],
                             'or_number'                     =>  $item["or_number"],
                             'amount'                        =>  $item["maximum_of_amount"],
-                            'customer_name'                 =>  $item["name"],
                             'isrebatable'                   => in_array(
                                                                     strtolower(trim((string) $item['eligible_for_rebate'])),
                                                                     ['yes', '1'],

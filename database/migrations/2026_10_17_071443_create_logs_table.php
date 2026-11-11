@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('logs', function (Blueprint $table) {
             $table->id();
             $table->string('file_name')->nullable();
-            $table->string('info');
+            $table->text('info');
             $table->timestamps();
         });
     }

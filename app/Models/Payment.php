@@ -21,6 +21,16 @@ class Payment extends Model
         return $this->belongsTo(Installment::class,'installment_id');
     }
 
+    public function voidedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'voided_by');
+    }
+
+    public function editedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'edited_by');
+    }
+
     #[Scope]
     public function search(Builder $builder , ?string $term)
     {

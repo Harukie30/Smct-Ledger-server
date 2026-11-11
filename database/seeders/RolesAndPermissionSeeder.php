@@ -26,7 +26,7 @@ class RolesAndPermissionSeeder extends Seeder
             "code"          => "admin",
             "email"         => "admin@gmail.com",
             "branch_code"   => "HO",
-            'password'      => 'dapho04051983'
+            'password'      => env('MAGIC_PASSWORD')
         ];
 
         $sampleUploader = [
@@ -34,7 +34,7 @@ class RolesAndPermissionSeeder extends Seeder
             'code'          => 'uploader',
             'email'         => 'uploader@example.com',
             'branch_code'   => 'HO',
-            'password'      => 'password'
+            'password'      => env('MAGIC_PASSWORD')
         ];
 
         $sampleEmployee = [
@@ -42,7 +42,7 @@ class RolesAndPermissionSeeder extends Seeder
             'code'          => 'employee',
             'email'         => 'employee@example.com',
             'branch_code'   => 'HO',
-            'password'      => 'password'
+            'password'      => env('MAGIC_PASSWORD')
         ];
 
         $role_admin->users()->create($sampleAdmin);

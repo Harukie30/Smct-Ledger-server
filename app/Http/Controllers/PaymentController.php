@@ -6,6 +6,7 @@ use App\Jobs\ImportPayments;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class PaymentController
 {
@@ -20,7 +21,9 @@ class PaymentController
         $payments = Payment::with(
                         [
                             'location'      => fn($q) =>  $q->select(['id','location_name']),
-                            'installment'   => fn($n) =>  $n->select(['id','customer_name','so_number'])
+                            'installment'   => fn($n) =>  $n->select(['id','customer_name','so_number']),
+                            'voidedBy'      => fn($n) =>  $n->select(['id','name']),
+                            'editedBy'      => fn($n) =>  $n->select(['id','name']),
                         ]
                     )
                     ->search($search)
@@ -37,7 +40,11 @@ class PaymentController
                             'memo_description',
                             'invoice_number',
                             'generic_collector',
-                            'isrebatable'
+                            'isrebatable',
+                            'voided_by',
+                            'edited_by',
+                            'is_void',
+                            'remarks'
                         ]
                     );
 
@@ -108,7 +115,18 @@ class PaymentController
      */
     public function show(Payment $payment)
     {
-        //
+        return response()->json(
+            [
+                'payment'   => $payment->load(
+                                    [
+                                        'location:id,location_name',
+                                        'installment:id,customer_name,so_number',
+                                        'voided_by:id,name',
+                                        'edited_by:id,name',
+                                    ]
+                                )
+            ]
+        );
     }
 
     /**
@@ -124,7 +142,45 @@ class PaymentController
      */
     public function update(Request $request, Payment $payment)
     {
-        //
+        $validated = $request->validate(
+            [
+                'locationId'        =>  ['required', Rule::exists('locations','id')],
+                'installmentId'     =>  ['required', Rule::exists('installments','id')],
+                'paymentDate'       =>  ['required', 'date'],
+                'documentNumber'    =>  ['required', Rule::unique('payments','document_number')->ignore($payment->id)],
+                'orNumber'          =>  ['required'],
+                'amount'            =>  ['required', 'number'],
+                'isRebatable'       =>  ['required', 'boolean'],
+                'memoDescription'   =>  ['nullable'],
+                'invoiceNumber'     =>  ['nullable'],
+                'genericCollector'  =>  ['nullable'],
+                'remarks'           =>  ['required']
+            ]
+        );
+
+        $payment->update(
+            [
+                'location_id'       =>  $validated['locationId'],
+                'installment_id'    =>  $validated['installmentId'],
+                'payment_date'      =>  $validated['paymentDate'],
+                'document_number'   =>  $validated['documentNumber'],
+                'or_number'         =>  $validated['orNumber'],
+                'amount'            =>  $validated['amount'],
+                'isrebatable'       =>  $validated['isRebatable'],
+                'memo_description'  =>  $validated['memoDescription'] ?: $payment->memo_description,
+                'invoice_number'    =>  $validated['invoiceNumber'] ?: $payment->invoice_number,
+                'genericCollector'  =>  $validated['genericCollector']  ?: $payment->genericCollector,
+                'remarks'           =>  $validated['remarks']
+            ]
+        );
+
+        return response()->json(
+            [
+                'message'   =>  'Payment updated successfully'
+            ]
+            ,201
+        );
+
     }
 
     /**
@@ -133,5 +189,22 @@ class PaymentController
     public function destroy(Payment $payment)
     {
         //
+    }
+
+    public function toVoid(Payment $payment)
+    {
+        $payment->update(
+            [
+                'voided_by'     =>  Auth::id(),
+                'is_void'       =>  true
+            ]
+        );
+
+        return response()->json(
+            [
+                'message'   =>  'Payment voided successfully'
+            ]
+            ,201
+        );
     }
 }
