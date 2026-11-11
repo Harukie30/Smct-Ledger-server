@@ -30,6 +30,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class, 'edited_by')->nullable()->constrained()->cascadeOnDelete();
             $table->boolean('is_void')->default(false);
             $table->string("remarks")->nullable();
+            $table->string("reasonToVoid")->nullable();
             $table->timestamps();
         });
     }

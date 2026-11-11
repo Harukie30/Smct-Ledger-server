@@ -24,7 +24,7 @@ Route::middleware(['auth', 'role:admin'])->group(
     function ()
     {
         Route::get('locations/selections', [LocationController::class, 'index2']);
-        Route::get('SO/selections', [InstallmentController::class, 'index2']);
+        Route::get('SOs/selections', [InstallmentController::class, 'index2']);
     }
 );
 
@@ -33,7 +33,7 @@ Route::middleware('auth:sanctum')->group(
     {
         Route::controller(PaymentController::class)->group(
             function () {
-                Route::patch('void','toVoid');
+                Route::patch('payments/{payment}/void','toVoid');
             }
         );
 
