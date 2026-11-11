@@ -191,12 +191,19 @@ class PaymentController
         //
     }
 
-    public function toVoid(Payment $payment)
+    public function toVoid(Payment $payment , Request $request)
     {
+        $validated = $request->validate(
+            [
+                'reason'    =>  ['required']
+            ]
+        );
+
         $payment->update(
             [
                 'voided_by'     =>  Auth::id(),
-                'is_void'       =>  true
+                'is_void'       =>  true,
+                'reasonToVoid'  =>  $validated['reason']
             ]
         );
 
