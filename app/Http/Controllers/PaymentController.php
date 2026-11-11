@@ -144,33 +144,33 @@ class PaymentController
     {
         $validated = $request->validate(
             [
-                'locationId'        =>  ['required', Rule::exists('locations','id')],
-                'installmentId'     =>  ['required', Rule::exists('installments','id')],
-                'paymentDate'       =>  ['required', 'date'],
-                'documentNumber'    =>  ['required', Rule::unique('payments','document_number')->ignore($payment->id)],
-                'orNumber'          =>  ['required'],
-                'amount'            =>  ['required', 'number'],
-                'isRebatable'       =>  ['required', 'boolean'],
-                'memoDescription'   =>  ['nullable'],
-                'invoiceNumber'     =>  ['nullable'],
-                'genericCollector'  =>  ['nullable'],
-                'remarks'           =>  ['required']
+                'locationId'            =>  ['required', Rule::exists('locations','id')],
+                'installmentId'         =>  ['required', Rule::exists('installments','id')],
+                'payment_date'          =>  ['required', 'date'],
+                'document_number'       =>  ['required', Rule::unique('payments','document_number')->ignore($payment->id)],
+                'or_number'             =>  ['required'],
+                'amount'                =>  ['required', 'numeric'],
+                'isrebatable'           =>  ['required', 'boolean'],
+                'memo_description'      =>  ['nullable'],
+                'invoice_number'        =>  ['nullable'],
+                'generic_collector'     =>  ['nullable'],
+                'remarks'               =>  ['required']
             ]
         );
 
         $payment->update(
             [
-                'location_id'       =>  $validated['locationId'],
-                'installment_id'    =>  $validated['installmentId'],
-                'payment_date'      =>  $validated['paymentDate'],
-                'document_number'   =>  $validated['documentNumber'],
-                'or_number'         =>  $validated['orNumber'],
-                'amount'            =>  $validated['amount'],
-                'isrebatable'       =>  $validated['isRebatable'],
-                'memo_description'  =>  $validated['memoDescription'] ?: $payment->memo_description,
-                'invoice_number'    =>  $validated['invoiceNumber'] ?: $payment->invoice_number,
-                'genericCollector'  =>  $validated['genericCollector']  ?: $payment->genericCollector,
-                'remarks'           =>  $validated['remarks']
+                'location_id'           =>  $validated['locationId'],
+                'installment_id'        =>  $validated['installmentId'],
+                'payment_date'          =>  $validated['payment_date'],
+                'document_number'       =>  $validated['document_number'],
+                'or_number'             =>  $validated['or_number'],
+                'amount'                =>  $validated['amount'],
+                'isrebatable'           =>  $validated['isrebatable'],
+                'memo_description'      =>  $validated['memo_description'] ?: $payment->memo_description,
+                'invoice_number'        =>  $validated['invoice_number'] ?: $payment->invoice_number,
+                'generic_collector'     =>  $validated['generic_collector']  ?: $payment->generic_collector,
+                'remarks'               =>  $validated['remarks']
             ]
         );
 
