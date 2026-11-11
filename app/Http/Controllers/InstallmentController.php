@@ -14,6 +14,16 @@ class InstallmentController extends Controller
     /**
      * Display a listing of the resource.
      */
+    public function index2()
+    {
+        return response()->json(
+            [
+                'locations' =>  Installment::get(['id','so_number'])
+            ]
+            ,200
+        );
+    }
+
     public function index(Request $request)
     {
         $search = $request->input('search');

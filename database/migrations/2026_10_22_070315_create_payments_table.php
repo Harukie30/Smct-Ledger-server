@@ -2,6 +2,7 @@
 
 use App\Models\Installment;
 use App\Models\Location;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -21,11 +22,14 @@ return new class extends Migration
             $table->string("document_number")->unique();
             $table->string("or_number");
             $table->integer("amount");
-            $table->string("customer_name");
             $table->boolean("isrebatable")->default(false);
             $table->text("memo_description")->nullable();
             $table->string("invoice_number")->nullable();
             $table->string("generic_collector")->nullable();
+            $table->foreignIdFor(User::class, 'voided_by')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(User::class, 'edited_by')->nullable()->constrained()->cascadeOnDelete();
+            $table->boolean('is_void')->default(false);
+            $table->string("remarks")->nullable();
             $table->timestamps();
         });
     }

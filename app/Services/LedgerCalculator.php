@@ -110,6 +110,8 @@ class LedgerCalculator
                 'rebate_applied'  => 0.0,   // total rebate nga na-apply niining payment
             ];
 
+            $lastNo = null;   // installment nga katapusang nakagamit sa kuwarta niining payment (para sa tooltip)
+
             // Sugod sa pinakaunang installment (1, 2, 3 ...)
             foreach ($inst as $n => &$i) {
                 // Rebate sa current due ra: kung milapas na ang current due, wala nay rebate
@@ -123,6 +125,8 @@ class LedgerCalculator
                 $monthsLateAtPayment   = max(0, $this->monthsBetween($i['due_date'], $paidAt));
                 // New Penalty = 4% sa unpaid (round up) x dugang nga bulan nga late
                 $newPen = $this->penalty($unpaid, $penaltyRate) * max(0, $monthsLateAtPayment - $i['months_late']);
+                // Dugang nga bulan nga na-penalty karon (detalye ra para sa Payment Breakdown tooltip)
+                $newMonths = max(0, $monthsLateAtPayment - $i['months_late']);
 
                 // PENALTY UNA: cash ra ang ipabayad, dili ang rebate
                 $penDue   = max(0.0, $i['pen_accrued'] - $i['pen_paid'] + $newPen);
@@ -167,7 +171,19 @@ class LedgerCalculator
                         'interest'  => round($intApply, 2),       // Interest
                         'penalty'   => round($penApply, 2),       // Penalty
                         'rebate'    => round($rebApply, 2),       // Rebate
+                        // Detalye sa kuwenta (para sa tooltip; dili makaapekto sa resulta)
+                        'unpaid_before'     => round($unpaid, 2),                              // unpaid sa dili pa mabayran
+                        'months_late'       => $monthsLateAtPayment,                           // bulan nga late hangtod sa petsa sa payment
+                        'new_months'        => $newMonths,                                     // bulan nga bag-ong gi-penalty
+                        'penalty_per_month' => $this->penalty($unpaid, $penaltyRate),          // 4% sa unpaid, round up
+                        'new_penalty'       => round($newPen, 2),                              // bag-ong penalty niining payment
+                        'unpaid_after'      => round($unpaid - $monApply, 2),                  // unpaid human sa payment
+                        'payment_amount'    => round($amount, 2),                              // tibuok nga cash nga gibayad
+                        'cash_available'    => round($cashLeft, 2),                            // cash nga i-apply niining installment
+                        'carried_from'      => $lastNo,                                        // installment diin gikan ang sobra (null = bag-ong payment)
+                        'cash_after'        => round($cashLeft - $cashUsed, 2),                // sobra nga moadto sa sunod nga installment
                     ];
+                    $lastNo = $n;
                 }
 
                 // I-ihap sa total niining payment
@@ -256,6 +272,13 @@ class LedgerCalculator
                 'balance_no_pen' => round(max(0.0, $base - $cumPaid), 2),
                 // Running Balance with Penalty
                 'balance_w_pen'  => round(max(0.0, $base - $cumPaid + $cumPen - $cumPenPaid), 2),
+                // Detalye sa penalty (para sa tooltip; dili makaapekto sa resulta)
+                'penalty_accrued'   => round($i['pen_accrued'], 2),   // penalty nga na-accrue na sa mga payment
+                'unpaid'            => round($unpaid, 2),             // monthly nga wala pa bayri
+                'months_late_today' => $monthsLateToday,              // bulan nga late hangtod karon
+                'extra_months'      => $unpaid > 0 ? max(0, $monthsLateToday - $i['months_late']) : 0,
+                'extra_penalty'     => round($extra, 2),              // dugang nga penalty hangtod karon
+                'penalty_per_month' => $unpaid > 0 ? $this->penalty($unpaid, $penaltyRate) : 0.0,
                 'payments'       => $i['payments'],                // Payment Breakdown
             ];
         }

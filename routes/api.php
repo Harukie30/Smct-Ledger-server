@@ -20,15 +20,22 @@ Route::get('profile', function (Request $request) {
         );
 })->middleware('auth:sanctum');
 
+Route::middleware(['auth', 'role:admin'])->group(
+    function ()
+    {
+        Route::get('locations/selections', [LocationController::class, 'index2']);
+        Route::get('SO/selections', [InstallmentController::class, 'index2']);
+    }
+);
 
 Route::middleware('auth:sanctum')->group(
-    function () {
-
-        // Route::controller(UserController::class)->group(
-        //     function () {
-
-        //     }
-        // );
+    function ()
+    {
+        Route::controller(PaymentController::class)->group(
+            function () {
+                Route::patch('void','toVoid');
+            }
+        );
 
         Route::apiResource('users', UserController::class);
         Route::apiResource('installments', InstallmentController::class);
