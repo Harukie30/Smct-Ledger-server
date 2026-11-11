@@ -56,6 +56,15 @@ class LedgerController extends Controller
                 'overdue'                  => $row['overdue'],
                 'balance_wo_penalty'       => $row['balance_no_pen'],
                 'balance_w_penalty'        => $row['balance_w_pen'],
+                // Detalye para sa Payment Breakdown tooltip
+                'monthly_installment'      => $row['monthly_due'],
+                'penalty_accrued'          => $row['penalty_accrued'],
+                'unpaid'                   => $row['unpaid'],
+                'months_late_today'        => $row['months_late_today'],
+                'extra_months'             => $row['extra_months'],
+                'extra_penalty'            => $row['extra_penalty'],
+                'penalty_per_month'        => $row['penalty_per_month'],
+                'payment_breakdown'        => $paid,   // kada payment nga na-apply niining installment
             ];
         }, $ledger['installments']);
 
