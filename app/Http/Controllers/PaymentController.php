@@ -44,6 +44,7 @@ class PaymentController
                             'voided_by',
                             'edited_by',
                             'is_void',
+                            'reasonToVoid',
                             'remarks'
                         ]
                     );
